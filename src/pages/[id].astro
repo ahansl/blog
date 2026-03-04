@@ -1,0 +1,56 @@
+---
+import { getCollection, render } from 'astro:content';
+import Base from '../layouts/Base.astro';
+
+export async function getStaticPaths() {
+	const posts = await getCollection('blog');
+	return posts
+		.filter((post) => !post.data.draft)
+		.map((post) => ({ params: { id: post.id }, props: post }));
+}
+
+const post = Astro.props;
+const { Content } = await render(post);
+---
+
+<Base title={post.data.title} description={post.data.description}>
+	<article>
+		<header>
+			<h1>{post.data.title}</h1>
+			<time datetime={post.data.pubDate.toISOString()}>
+				{post.data.pubDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+			</time>
+			{post.data.updatedDate && (
+				<div class="updated">
+					Updated: <time datetime={post.data.updatedDate.toISOString()}>
+						{post.data.updatedDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+					</time>
+				</div>
+			)}
+		</header>
+		<hr />
+		<Content />
+	</article>
+	<p class="back"><a href="/">&larr; Back</a></p>
+</Base>
+
+<style>
+	header {
+		margin-bottom: 0.5rem;
+	}
+
+	time {
+		font-size: 0.875rem;
+		color: #666;
+	}
+
+	.updated {
+		font-size: 0.875rem;
+		color: #666;
+		font-style: italic;
+	}
+
+	.back {
+		margin-top: 2rem;
+	}
+</style>
