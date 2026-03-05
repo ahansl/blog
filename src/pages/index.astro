@@ -5,6 +5,8 @@ import Base from '../layouts/Base.astro';
 const posts = (await getCollection('blog'))
 	.filter((post) => !post.data.draft)
 	.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+
+const base = import.meta.env.BASE_URL;
 ---
 
 <Base title="Blog">
@@ -12,7 +14,7 @@ const posts = (await getCollection('blog'))
 	<ul class="posts">
 		{posts.map((post) => (
 			<li>
-				<a href={`/${post.id}`}>
+				<a href={`${base}${post.id}`}>
 					{post.data.title}
 				</a>
 				<time datetime={post.data.pubDate.toISOString()}>
